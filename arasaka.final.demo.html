@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARASAKA CORP // Securing Your Future</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron & Rajdhani -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        arasaka: {
+                            red: '#FF003C',
+                            glowred: '#FF1E43',
+                            darkred: '#550014',
+                            black: '#060608',
+                            panel: '#0E1017',
+                            card: '#141722',
+                            border: '#282C3D',
+                            cyan: '#00F0FF',
+                            gold: '#FFD700'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        tech: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #060608;
+            color: #f3f4f6;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Cyberpunk Polygon Clip Corners */
+        .clip-corner {
+            clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+        }
+
+        .clip-corner-cyan {
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+        }
+
+        .clip-corner-topright {
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+        }
+
+        .clip-corner-modal {
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+        }
+
+        .clip-badge {
+            clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+        }
+
+        /* High Contrast Neon Glow Effects */
+        .glow-box-red {
+            box-shadow: 0 0 25px rgba(255, 0, 60, 0.35);
+        }
+        .glow-box-red:hover {
+            box-shadow: 0 0 40px rgba(255, 0, 60, 0.65);
+        }
+        .glow-box-gold {
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .text-shadow-red {
+            text-shadow: 0 0 18px rgba(255, 0, 60, 0.95);
+        }
+        .text-shadow-gold {
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        /* Custom High-Contrast Scrollbar */
+        ::-webkit-scrollbar {
+            height: 13px;
+            width: 18px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060608;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff003c;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff3366;
+        }
+
+        /* Top-to-Bottom Vertical Text (In-Game Tower) */
+        .vertical-text-top-down {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 0.28em;
+        }
+
+        /* Horizontal Category Scroll Container */
+        .horizontal-scroll-nav {
+            overflow-x: auto;
+            white-space: nowrap;
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row antialiased selection:bg-arasaka-red selection:text-white relative">
+
+    <!-- LEFT SIDEBAR: ARASAKA TOWER MONOLITH (~28% WIDTH ON DESKTOP) -->
+    <aside class="w-full lg:w-[30%] xl:w-[26%] h-[50vh] lg:h-screen lg:sticky top-0 bg-arasaka-black border-b-2 lg:border-b-0 lg:border-r-2 border-arasaka-red overflow-hidden z-30 flex flex-col justify-between relative shadow-[0_0_35px_rgba(255,0,60,0.4)]">
+        
+        <!-- Canvas for Arasaka Tower artwork -->
+        <canvas id="towerCanvas" class="absolute inset-0 w-full h-full object-cover z-0"></canvas>
+
+        <!-- Dark Gradient Overlay for text contrast -->
+        <div class="absolute inset-0 bg-gradient-to-t from-arasaka-black via-transparent to-arasaka-black/90 z-10 pointer-events-none"></div>
+
+        <!-- TOP-TO-BOTTOM VERTICAL BRANDING (LEFT SIDE OF TOWER - AS IN GAME) -->
+        <div class="absolute left-3 lg:left-5 top-16 bottom-20 z-20 flex flex-col items-center justify-between pointer-events-none select-none">
+            <!-- Official Arasaka 3-Circle Emblem -->
+            <div class="flex flex-col items-center space-y-2 p-2.5 bg-black/85 border-2 border-arasaka-red rounded-full backdrop-blur-md shadow-[0_0_20px_#ff003c]">
+                <div class="w-4 h-4 rounded-full bg-arasaka-red shadow-[0_0_12px_#ff003c]"></div>
+                <div class="w-4 h-4 rounded-full bg-arasaka-red shadow-[0_0_12px_#ff003c]"></div>
+                <div class="w-4 h-4 rounded-full bg-arasaka-red shadow-[0_0_12px_#ff003c]"></div>
+            </div>
+
+            <!-- Top to Down ARASAKA Text -->
+            <div class="text-2xl lg:text-4xl font-orbitron font-black text-white vertical-text-top-down text-shadow-red my-auto py-4">
+                ARASAKA
+            </div>
+
+            <!-- Top to Down Japanese Kanji 荒坂 -->
+            <div class="text-xl lg:text-3xl font-bold text-arasaka-red vertical-text-top-down tracking-widest bg-black/80 px-1.5 py-4 border-y-2 border-arasaka-red">
+                荒坂
+            </div>
+        </div>
+
+        <!-- Top Header Status Widget -->
+        <div class="relative z-20 p-4 flex justify-between items-start">
+            <div class="bg-black/90 backdrop-blur-md px-4 py-2 border-2 border-arasaka-red rounded clip-badge shadow-lg">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-arasaka-red animate-pulse"></span>
+                    <span class="font-orbitron font-extrabold text-xs lg:text-sm text-white tracking-wider">NIGHT CITY HQ</span>
+                </div>
+                <div class="text-[11px] font-mono text-arasaka-red font-bold">CORP PLAZA // TOWER 01</div>
+            </div>
+
+            <div class="bg-black/90 backdrop-blur-md px-3.5 py-2 border border-arasaka-border font-mono text-xs text-right">
+                <div id="currentTime" class="text-arasaka-cyan font-bold text-sm">00:00:00 NC-T</div>
+                <div class="text-[10px] text-gray-300 font-bold">DEFENSE: MAXIMUM</div>
+            </div>
+        </div>
+
+        <!-- Center Tower Info HUD -->
+        <div class="relative z-20 px-4 lg:px-6 my-auto text-right self-end max-w-xs pointer-events-none">
+            <div class="inline-block px-3 py-1 bg-arasaka-red text-white text-xs lg:text-sm font-orbitron font-black mb-2 clip-badge shadow-[0_0_15px_rgba(255,0,60,0.9)]">
+                ELEVATION: <span id="elevationValue">140F (APEX)</span>
+            </div>
+            <h1 class="text-3xl lg:text-5xl font-orbitron font-black text-white tracking-tight uppercase leading-none text-shadow-red">
+                ARASAKA<br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-arasaka-red via-white to-arasaka-cyan">TOWER</span>
+            </h1>
+            <p class="text-xs lg:text-sm font-tech text-gray-100 mt-2 bg-black/90 p-3 border-r-4 border-arasaka-red backdrop-blur-md shadow-2xl font-bold">
+                140 stories of automated laser defense, Soulkiller neural vaults, and executive command.
+            </p>
+        </div>
+
+        <!-- Bottom Elevator Tracking & SFX Toggle -->
+        <div class="relative z-20 p-4 flex justify-between items-end bg-gradient-to-t from-arasaka-black via-arasaka-black/95 to-transparent">
+            <div>
+                <div class="text-[11px] font-mono text-gray-200 font-bold mb-1">ELEVATOR LOCATION</div>
+                <div class="w-32 lg:w-44 bg-gray-900 border-2 border-arasaka-red h-2.5 rounded overflow-hidden">
+                    <div id="scrollProgress" class="bg-arasaka-red h-full w-0 transition-all duration-75 shadow-[0_0_12px_#ff003c]"></div>
+                </div>
+            </div>
+
+            <!-- Audio SFX Toggle Button -->
+            <button id="soundToggleBtn" onclick="toggleAudio()" class="px-3.5 py-2 bg-arasaka-card border-2 border-arasaka-red hover:bg-arasaka-red text-white text-xs font-orbitron font-bold transition flex items-center gap-2 clip-corner">
+                <i id="soundIcon" class="fas fa-volume-xmark text-arasaka-red"></i>
+                <span id="soundText" class="text-[11px]">SFX OFF</span>
+            </button>
+
+            <!-- Background Music Audio Tag -->
+            <audio id="bgMusic" loop preload="auto">
+                <source src="cyber-music.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT AREA (~70% WIDTH ON DESKTOP) -->
+    <main class="w-full lg:w-[70%] xl:w-[74%] min-h-screen bg-arasaka-black p-4 lg:p-10 space-y-16 z-20">
+
+        <!-- STICKY HEADER & CATEGORIES -->
+        <header class="sticky top-0 z-40 bg-arasaka-black/95 backdrop-blur-xl border-b-2 border-arasaka-red pb-5 pt-4 -mx-4 px-4 lg:-mx-10 lg:px-10 shadow-2xl">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+                
+                <!-- Working Search Bar -->
+                <div class="relative w-full md:w-2/3">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-arasaka-red text-lg"></i>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" 
+                           placeholder="Search Cyberware (Mantis Blades, Subdermal Armor, Titan, Relic 2.0 Academy)..." 
+                           class="w-full bg-arasaka-card border-2 border-arasaka-border text-white text-base lg:text-lg font-tech pl-12 pr-10 py-3 rounded focus:outline-none focus:border-arasaka-red transition clip-corner">
+                    <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-base text-gray-400 hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Security Clearance Level Dropdown & Cart Trigger Button Wrapper -->
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                    
+                    <!-- CYAN CART BUTTON WITH FLOATING FULL RED BADGE ON TOP-LEFT -->
+                    <div class="relative inline-block overflow-visible pt-2 pl-2">
+                        <button onclick="toggleCartDrawer()" class="px-5 py-2.5 bg-arasaka-card hover:bg-[#00F0FF]/20 text-[#00F0FF] hover:text-white text-sm font-orbitron font-black transition rounded clip-corner-cyan border-2 border-[#00F0FF] flex items-center gap-2 shadow.glow-cyan">
+                            <i class="fas fa-shopping-cart text-[#00F0FF]"></i>
+                            <span>CART</span>
+                        </button>
+                        <span id="cartBadge" class="absolute top-0 left-0 bg-[#FF003C] text-white text-[11px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center border border-black shadow-[0_0_12px_#FF003c] z-50 pointer-events-none">0</span>
+                    </div>
+
+                    <span class="text-xs lg:text-sm font-orbitron text-gray-200 font-black uppercase">CLEARANCE:</span>
+                    <select id="clearanceSelect" onchange="updateClearance(this.value)" class="bg-arasaka-card border-2 border-arasaka-red text-arasaka-red font-orbitron font-extrabold text-sm py-2.5 px-4 focus:outline-none clip-corner cursor-pointer">
+                        <option value="LVL_1">LVL 1 - VISITOR</option>
+                        <option value="LVL_3">LVL 3 - AGENT</option>
+                        <option value="LVL_5" selected>LVL 5 - EXECUTIVE</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SCROLLABLE TOP CATEGORY BAR -->
+            <nav class="horizontal-scroll-nav flex items-center gap-3 pb-2 pt-1 w-full">
+                <button onclick="showSection('home')" class="nav-tab px-5 py-2.5 bg-arasaka-red text-white text-sm lg:text-base font-orbitron font-black whitespace-nowrap transition rounded clip-corner border-2 border-arasaka-red">
+                    HOME & ABOUT
+                </button>
+                <button onclick="showSection('cyberware')" class="nav-tab px-5 py-2.5 bg-arasaka-card text-white hover:border-arasaka-red hover:bg-arasaka-red text-sm lg:text-base font-orbitron font-black whitespace-nowrap transition rounded clip-corner border-2 border-arasaka-border">
+                    01// CYBERWARE
+                </button>
+                <button onclick="showSection('careers')" class="nav-tab px-5 py-2.5 bg-arasaka-card text-white hover:border-arasaka-red hover:bg-arasaka-red text-sm lg:text-base font-orbitron font-black whitespace-nowrap transition rounded clip-corner border-2 border-arasaka-border">
+                    02// SCHOLARSHIP, ACADEMY & CAREER
+                </button>
+                <button onclick="showSection('intelligence')" class="nav-tab px-5 py-2.5 bg-arasaka-card text-white hover:border-arasaka-red hover:bg-arasaka-red text-sm lg:text-base font-orbitron font-black whitespace-nowrap transition rounded clip-corner border-2 border-arasaka-border">
+                    03// INTELLIGENCE & SECURITY
+                </button>
+                <button onclick="showSection('divisions')" class="nav-tab px-5 py-2.5 bg-arasaka-card text-white hover:border-arasaka-red hover:bg-arasaka-red text-sm lg:text-base font-orbitron font-black whitespace-nowrap transition rounded clip-corner border-2 border-arasaka-border">
+                    04// ORBITAL & BANKING
+                </button>
+            </nav>
+        </header>
+
+        <!-- HOMEPAGE & ABOUT (DEFAULT INITIAL VIEW) -->
+        <section id="homeSection" class="space-y-8">
+            <div class="flex items-center justify-between border-b-2 border-arasaka-red pb-4">
+                <h2 class="text-3xl lg:text-4xl font-orbitron font-black text-white flex items-center gap-3">
+                    <span class="text-arasaka-red">//</span> ABOUT ARASAKA CORPORATION
+                </h2>
+                <span class="text-xs lg:text-sm font-mono text-arasaka-cyan font-bold">EST. 1915 // TOKYO, JAPAN</span>
+            </div>
+
+            <!-- ENLARGED CEO DIRECTIVE & SLOGAN BANNER -->
+            <div class="bg-gradient-to-r from-arasaka-card via-black to-arasaka-panel border-4 border-arasaka-red p-8 lg:p-10 rounded clip-corner glow-box-red relative overflow-hidden space-y-6">
+                <div class="absolute -right-10 -bottom-10 text-9xl font-black text-arasaka-red/10 pointer-events-none font-orbitron select-none">荒坂</div>
+                
+                <div class="flex items-center gap-3 text-arasaka-gold font-orbitron font-black text-sm lg:text-base tracking-widest text-shadow-gold">
+                    <i class="fas fa-crown text-xl"></i> IMPERIAL DIRECTIVE // SABURO ARASAKA
+                </div>
+
+                <!-- HUGE MOTTO / SLOGAN -->
+                <div class="text-3xl lg:text-5xl font-orbitron font-black text-white leading-tight text-shadow-red uppercase border-l-8 border-arasaka-red pl-6 py-2">
+                    "SECURING YOUR FUTURE. GUARANTEEING TOMORROW."
+                </div>
+
+                <!-- ENLARGED EXECUTIVE QUOTE -->
+                <p class="text-xl lg:text-2xl font-tech text-gray-100 font-extrabold italic leading-relaxed bg-black/60 p-5 rounded border border-arasaka-border">
+                    "Order is not maintained through treaties or concessions. It is dictated by supreme technology, military excellence, and absolute corporate authority."
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-2 border-t border-arasaka-border">
+                    <div class="text-sm font-orbitron font-black text-arasaka-gold">
+                        — SABURO ARASAKA // EMPEROR OF ARASAKA
+                    </div>
+                    <div class="text-xs font-mono text-arasaka-cyan font-bold bg-arasaka-red/20 px-3 py-1 border border-arasaka-red">
+                        AUTHORITY CODE: #000-SABURO-SUPREME
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overview Text -->
+            <p class="text-lg lg:text-xl text-gray-100 font-tech leading-relaxed bg-arasaka-panel p-6 border-l-8 border-arasaka-red rounded font-semibold">
+                Arasaka Corporation stands as the world's premier megacorporation. Spanning global banking, private military defense, orbital manufacturing, and neural cybernetics, Arasaka safeguards corporate dynasties, digitizes human consciousness through Soulkiller, and enforces global stability from Night City to Tokyo.
+            </p>
+        </section>
+
+        <!-- CATEGORY 1: CYBERWARE CATALOG (HIDDEN UNTIL CLICKED OR SEARCHED) -->
+        <section id="cyberwareSection" class="hidden space-y-8">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between border-b-2 border-arasaka-red pb-4 gap-4">
+                <h2 class="text-3xl lg:text-4xl font-orbitron font-black text-white flex items-center gap-3">
+                    <span class="text-arasaka-red">//</span> OFFICIAL ARASAKA CYBERWARE
+                </h2>
+                
+                <!-- Category Filter Buttons -->
+                <div class="flex flex-wrap items-center gap-2.5 font-orbitron text-xs lg:text-sm">
+                    <button onclick="filterCyberware('ALL')" class="cyber-filter-btn px-4 py-2 bg-arasaka-red text-white font-black border-2 border-arasaka-red rounded clip-corner">ALL</button>
+                    <button onclick="filterCyberware('COMBAT')" class="cyber-filter-btn px-4 py-2 bg-arasaka-card text-gray-200 font-bold border-2 border-arasaka-border hover:border-arasaka-red rounded clip-corner">COMBAT</button>
+                    <button onclick="filterCyberware('NEURAL')" class="cyber-filter-btn px-4 py-2 bg-arasaka-card text-gray-200 font-bold border-2 border-arasaka-border hover:border-arasaka-red rounded clip-corner">NEURAL</button>
+                    <button onclick="filterCyberware('DEFENSE')" class="cyber-filter-btn px-4 py-2 bg-arasaka-card text-gray-200 font-bold border-2 border-arasaka-border hover:border-arasaka-red rounded clip-corner">DEFENSE</button>
+                </div>
+            </div>
+
+            <!-- Cyberware Grid -->
+            <div id="cyberwareGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </section>
+
+        <!-- CATEGORY 2: SCHOLARSHIP, ACADEMY & CAREERS -->
+        <section id="careersSection" class="hidden space-y-8">
+            <div class="flex items-center justify-between border-b-2 border-arasaka-red pb-4">
+                <h2 class="text-3xl lg:text-4xl font-orbitron font-black text-white flex items-center gap-3">
+                    <span class="text-arasaka-red">//</span> SCHOLARSHIP, ACADEMY & CAREER
+                </h2>
+                <span class="text-xs lg:text-sm font-mono text-arasaka-red font-bold px-3 py-1 bg-arasaka-red/20 border border-arasaka-red">RECRUITING NOW</span>
+            </div>
+
+            <!-- Academy Categories Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded clip-corner">
+                    <i class="fas fa-graduation-cap text-arasaka-red text-3xl mb-3"></i>
+                    <h3 class="font-orbitron font-black text-white text-lg mb-2">1// ACADEMY SCHOLARSHIP TRACK</h3>
+                    <p class="text-sm text-gray-200 font-tech">Full tuition grants, cyberware stipends, and direct officer rank placement upon graduation.</p>
+                </div>
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded clip-corner">
+                    <i class="fas fa-brain text-arasaka-cyan text-3xl mb-3"></i>
+                    <h3 class="font-orbitron font-black text-white text-lg mb-2">2// INTELLIGENT SECTOR & R&D</h3>
+                    <p class="text-sm text-gray-200 font-tech">Advanced neural engineering, netrunning defense labs, and bio-chip hardware design.</p>
+                </div>
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded clip-corner">
+                    <i class="fas fa-user-shield text-arasaka-gold text-3xl mb-3"></i>
+                    <h3 class="font-orbitron font-black text-white text-lg mb-2">3// EXECUTIVE TACTICAL CAREERS</h3>
+                    <p class="text-sm text-gray-200 font-tech">Private military leadership, counter-intelligence, and AV-9 escort flight command.</p>
+                </div>
+            </div>
+
+            <!-- Academy Feature Card -->
+            <div class="bg-arasaka-card border-2 border-arasaka-red rounded clip-corner overflow-hidden glow-box-red flex flex-col md:flex-row">
+                <div class="w-full md:w-1/2 h-64 md:h-auto overflow-hidden relative bg-black/60">
+                    <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80" 
+                         alt="Arasaka Academy Campus" 
+                         onerror="this.src='https://placehold.co/800x600/181A24/FF003C?text=Arasaka+Academy+Campus'"
+                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-arasaka-card via-transparent to-transparent"></div>
+                    <div class="absolute bottom-3 left-3 bg-black/90 border border-arasaka-red px-3 py-1 text-xs font-orbitron font-bold text-white z-10">
+                        NIGHT CITY & TOKYO CAMPUSES
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2 p-7 flex flex-col justify-between space-y-5">
+                    <div>
+                        <span class="text-xs font-mono text-arasaka-cyan font-bold">[SCHOLARSHIP GRANT 2077/78]</span>
+                        <h3 class="text-2xl font-orbitron font-black text-white mt-1">THE ACADEMY EXECUTIVE TRACK</h3>
+                        <p class="text-base font-tech text-gray-200 mt-2 leading-relaxed">
+                            Full tuition scholarship, bio-monitored luxury lodging, and direct officer placement within Arasaka Security or R&D upon graduation.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap gap-2 text-xs font-mono text-gray-200">
+                            <span class="px-3 py-1 bg-black border border-arasaka-border font-bold">✓ Cyberware Stipend</span>
+                            <span class="px-3 py-1 bg-black border border-arasaka-border font-bold">✓ Fast-Track Officer Rank</span>
+                        </div>
+                        <button onclick="openModal('applyModal')" class="w-full py-3.5 bg-arasaka-red hover:bg-arasaka-glowred text-white font-orbitron font-black text-base tracking-wider clip-corner transition shadow-md">
+                            APPLY FOR SCHOLARSHIP
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open Positions -->
+            <div class="bg-arasaka-card border-2 border-arasaka-border rounded overflow-hidden">
+                <div class="p-5 bg-black/90 font-orbitron text-base text-arasaka-red font-bold border-b border-arasaka-border flex justify-between items-center">
+                    <span>OPEN CORPORATE POSITIONS</span>
+                    <span class="text-xs text-gray-300 font-mono font-bold">SECTOR 01 NIGHT CITY</span>
+                </div>
+                <div class="divide-y divide-arasaka-border text-base font-tech">
+                    <div class="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-arasaka-red/10 transition">
+                        <div>
+                            <div class="text-white font-bold text-lg">Counter-Intelligence Operative</div>
+                            <div class="text-gray-300 text-xs font-mono">Netrunning Security // Level 4 Clearance</div>
+                        </div>
+                        <button onclick="openModal('applyModal')" class="px-5 py-2.5 bg-arasaka-red text-white font-orbitron font-bold text-xs clip-corner">APPLY NOW</button>
+                    </div>
+                    <div class="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-arasaka-red/10 transition">
+                        <div>
+                            <div class="text-white font-bold text-lg">Subdermal Cybernetics Engineer</div>
+                            <div class="text-gray-300 text-xs font-mono">Biomechanical R&D Labs</div>
+                        </div>
+                        <button onclick="openModal('applyModal')" class="px-5 py-2.5 bg-arasaka-red text-white font-orbitron font-bold text-xs clip-corner">APPLY NOW</button>
+                    </div>
+                    <div class="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-arasaka-red/10 transition">
+                        <div>
+                            <div class="text-white font-bold text-lg">Tactical AV-9 Combat Pilot</div>
+                            <div class="text-gray-300 text-xs font-mono">Executive Escort Fleet</div>
+                        </div>
+                        <button onclick="openModal('applyModal')" class="px-5 py-2.5 bg-arasaka-red text-white font-orbitron font-bold text-xs clip-corner">APPLY NOW</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORY 3: INTELLIGENCE & SECURITY -->
+        <section id="intelligenceSection" class="hidden space-y-8">
+            <div class="flex items-center justify-between border-b-2 border-arasaka-red pb-4">
+                <h2 class="text-3xl lg:text-4xl font-orbitron font-black text-white flex items-center gap-3">
+                    <span class="text-arasaka-red">//</span> INTELLIGENCE & SECURITY
+                </h2>
+                <span class="text-xs lg:text-sm font-mono text-arasaka-cyan font-bold animate-pulse">● LIVE THREAT MONITOR</span>
+            </div>
+
+            <!-- Heavy Mech Image Banner -->
+            <div class="bg-arasaka-card border-2 border-arasaka-border rounded overflow-hidden relative group">
+                <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1000&q=80" 
+                     alt="Arasaka Tactical Mech" 
+                     onerror="this.src='https://placehold.co/1000x500/181A24/FF003C?text=Arasaka+Tactical+Mech'"
+                     class="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-arasaka-black via-arasaka-black/50 to-transparent"></div>
+                <div class="absolute bottom-5 left-5 right-5 flex justify-between items-end">
+                    <div>
+                        <div class="text-xs font-mono text-arasaka-red font-bold">HEAVY ASSET PROTECTION</div>
+                        <h3 class="text-2xl font-orbitron font-black text-white">ARASAKA RED MENACE TACTICAL MECH</h3>
+                    </div>
+                    <span class="px-4 py-1.5 bg-arasaka-red text-white text-xs font-orbitron font-bold clip-badge">ACTIVE DEPLOYMENT</span>
+                </div>
+            </div>
+
+            <!-- Expanded Security Services Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded hover:border-arasaka-red transition clip-corner">
+                    <i class="fas fa-bug text-arasaka-red text-3xl mb-3"></i>
+                    <h3 class="font-orbitron font-black text-white text-lg mb-2">BLACKWALL ICE FORTRESS</h3>
+                    <p class="text-sm text-gray-200 font-tech">Lethal automated netrunner countermeasures designed to fry host nervous systems upon breach attempt.</p>
+                </div>
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded hover:border-arasaka-red transition clip-corner">
+                    <i class="fas fa-user-ninja text-arasaka-cyan text-3xl mb-3"></i>
+                    <h3 class="font-orbitron font-black text-white text-lg mb-2">VIP TACTICAL ESCORT</h3>
+                    <p class="text-sm text-gray-200 font-tech">Level 5 armored escort squads equipped with Smart weapons and personal AV-9 transports.</p>
+                </div>
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded hover:border-arasaka-red transition clip-corner">
+                    <i class="fas fa-heart-pulse text-arasaka-gold text-3xl mb-3"></i>
+                    <h3 class="font-orbitron font-black text-white text-lg mb-2">PLATINUM TRAUMA EVAC</h3>
+                    <p class="text-sm text-gray-200 font-tech">Sub-second biometric telemetry tracking with guaranteed combat medic extraction within 180 seconds.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORY 4: ORBITAL & BANKING DIVISIONS -->
+        <section id="divisionsSection" class="hidden space-y-8">
+            <div class="flex items-center justify-between border-b-2 border-arasaka-red pb-4">
+                <h2 class="text-3xl lg:text-4xl font-orbitron font-black text-white flex items-center gap-3">
+                    <span class="text-arasaka-red">//</span> ORBITAL & BANKING DIVISIONS
+                </h2>
+                <span class="text-xs lg:text-sm font-mono text-arasaka-gold font-bold">SOVEREIGN ASSETS</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Orbital Division -->
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-7 rounded clip-corner space-y-4 hover:border-arasaka-red transition">
+                    <div class="flex justify-between items-center border-b border-arasaka-border pb-3">
+                        <span class="text-xs font-mono text-arasaka-cyan font-bold">[OFF-WORLD MANUFACTURING]</span>
+                        <i class="fas fa-satellite-dish text-arasaka-cyan text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-orbitron font-black text-white">ARASAKA ORBITAL & DEEP SPACE</h3>
+                    <p class="text-base font-tech text-gray-200 leading-relaxed">
+                        Operating high-orbit defense satellites, zero-gravity alloy research stations, and intercontinental launch pads across Crystal Palace and Lunar bases.
+                    </p>
+                    <ul class="text-xs font-mono text-gray-300 space-y-2 pt-2">
+                        <li>✦ Kinetic Orbital Strike Array (Odin Platform)</li>
+                        <li>✦ Zero-G Cyberware Component Fabrication</li>
+                    </ul>
+                </div>
+
+                <!-- Banking & Digital Immortality -->
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-7 rounded clip-corner space-y-4 hover:border-arasaka-red transition">
+                    <div class="flex justify-between items-center border-b border-arasaka-border pb-3">
+                        <span class="text-xs font-mono text-arasaka-gold font-bold">[SOULKILLER VAULTS]</span>
+                        <i class="fas fa-vault text-arasaka-gold text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-orbitron font-black text-white">SECURE YOUR SOUL TRUST</h3>
+                    <p class="text-base font-tech text-gray-200 leading-relaxed">
+                        Digital consciousness custody in fortified subterranean servers beneath Tokyo and Night City, preserving executive minds for eternity.
+                    </p>
+                    <ul class="text-xs font-mono text-gray-300 space-y-2 pt-2">
+                        <li>✦ Relic 2.0 Digital Construct Storage</li>
+                        <li>✦ High-Yield Eurodollar Sovereign Vaults</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT INFO & ENCRYPTED COMMS TERMINAL (ALWAYS SHOWN AT THE BOTTOM) -->
+        <section id="contactSection" class="scroll-mt-32 space-y-8 border-t-2 border-arasaka-border pt-8">
+            <div class="flex items-center justify-between border-b-2 border-arasaka-red pb-4">
+                <h2 class="text-3xl lg:text-4xl font-orbitron font-black text-white flex items-center gap-3">
+                    <span class="text-arasaka-red">//</span> CONTACT & DIRECTIVES
+                </h2>
+                <span class="text-xs lg:text-sm font-mono text-arasaka-cyan font-bold">256-BIT ENCRYPTION</span>
+            </div>
+
+            <!-- Corporate Physical HQ Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Night City HQ -->
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded clip-corner space-y-3 hover:border-arasaka-red transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono text-arasaka-red font-bold">[PRIMARY AMERICAN HQ]</span>
+                        <i class="fas fa-building text-arasaka-red text-2xl"></i>
+                    </div>
+                    <h3 class="font-orbitron font-black text-white text-xl">NIGHT CITY ARASAKA TOWER</h3>
+                    <div class="text-base font-tech text-gray-200 space-y-1.5">
+                        <p><i class="fas fa-map-marker-alt text-arasaka-red w-6"></i> Corporate Plaza, Downtown Night City</p>
+                        <p><i class="fas fa-phone text-arasaka-cyan w-6"></i> +1 (309) 555-ARASAKA [2727]</p>
+                        <p><i class="fas fa-satellite text-arasaka-gold w-6"></i> Net Frequency: 88.291.002.1</p>
+                    </div>
+                </div>
+
+                <!-- Tokyo World HQ -->
+                <div class="bg-arasaka-card border-2 border-arasaka-border p-6 rounded clip-corner space-y-3 hover:border-arasaka-red transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono text-arasaka-cyan font-bold">[GLOBAL WORLD HEADQUARTERS]</span>
+                        <i class="fas fa-globe text-arasaka-cyan text-2xl"></i>
+                    </div>
+                    <h3 class="font-orbitron font-black text-white text-xl">TOKYO ARASAKA MONOLITH</h3>
+                    <div class="text-base font-tech text-gray-200 space-y-1.5">
+                        <p><i class="fas fa-map-marker-alt text-arasaka-red w-6"></i> Chiyoda-ku, Tokyo, Japan</p>
+                        <p><i class="fas fa-phone text-arasaka-cyan w-6"></i> +81 (03) 5555-8800</p>
+                        <p><i class="fas fa-envelope text-arasaka-gold w-6"></i> direct-executive@arasaka.co.jp</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Encrypted Contact Form Terminal -->
+            <div class="bg-arasaka-card border-2 border-arasaka-border p-8 rounded clip-corner font-tech space-y-5 glow-box-red">
+                <div class="flex items-center justify-between border-b border-arasaka-border pb-4 text-xs font-mono text-gray-300">
+                    <span class="text-arasaka-cyan font-bold"><i class="fas fa-terminal mr-2"></i>TERMINAL ID: NC-ARASAKA-9921</span>
+                    <span class="text-arasaka-red font-bold">EMERGENCY HOTLINE: 911-ARASAKA</span>
+                </div>
+
+                <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-gray-200 text-sm font-bold mb-1.5">NAME / CALLSIGN *</label>
+                            <input type="text" required placeholder="e.g. Agent Alvarez" class="w-full bg-black border-2 border-arasaka-border px-4 py-3 text-white font-tech text-base focus:outline-none focus:border-arasaka-red rounded transition">
+                        </div>
+                        <div>
+                            <label class="block text-gray-200 text-sm font-bold mb-1.5">CLEARANCE ID / FREQUENCY *</label>
+                            <input type="text" required placeholder="ID-8821-NC" class="w-full bg-black border-2 border-arasaka-border px-4 py-3 text-white font-tech text-base focus:outline-none focus:border-arasaka-red rounded transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-200 text-sm font-bold mb-1.5">TARGET DEPARTMENT *</label>
+                        <select class="w-full bg-black border-2 border-arasaka-border px-4 py-3 text-white font-tech text-base focus:outline-none focus:border-arasaka-red rounded transition">
+                            <option>Cyberware Requisition & Distribution</option>
+                            <option>Private Military / Tactical Escort Services</option>
+                            <option>Arasaka Academy & Scholarship Board</option>
+                            <option>Secure Your Soul Trust / Relic Custody</option>
+                            <option>Executive Level Escalation</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-200 text-sm font-bold mb-1.5">ENCRYPTED MESSAGE *</label>
+                        <textarea rows="4" required placeholder="Type encrypted message..." class="w-full bg-black border-2 border-arasaka-border px-4 py-3 text-white font-tech text-base focus:outline-none focus:border-arasaka-red rounded transition"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-arasaka-red hover:bg-arasaka-glowred text-white font-orbitron font-black tracking-widest text-base clip-corner transition shadow-lg">
+                        TRANSMIT ENCRYPTED DATA
+                    </button>
+                </form>
+
+                <div id="contactStatus" class="hidden p-4 bg-arasaka-red/20 border-2 border-arasaka-red text-arasaka-red font-mono text-xs rounded font-bold">
+                    [SYSTEM] Transmission encrypted and uploaded to Night City Sub-Server 01. Response pending clearance.
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="border-t-2 border-arasaka-border pt-8 pb-12 text-center text-xs font-mono text-gray-400 space-y-3">
+            <div class="flex justify-center items-center gap-2 text-arasaka-red">
+                <div class="w-3 h-3 rounded-full bg-arasaka-red shadow-[0_0_10px_#ff003c]"></div>
+                <div class="w-3 h-3 rounded-full bg-arasaka-red shadow-[0_0_10px_#ff003c]"></div>
+                <div class="w-3 h-3 rounded-full bg-arasaka-red shadow-[0_0_10px_#ff003c]"></div>
+            </div>
+            <p class="font-bold text-gray-200 text-base font-orbitron">© 2077 ARASAKA CORPORATION. ALL RIGHTS RESERVED.</p>
+            <p class="text-xs text-gray-400 max-w-xl mx-auto">
+                Unauthorized access to Arasaka data networks is punishable under Corporate Security Act Article 77.
+            </p>
+        </footer>
+    </main>
+
+    <!-- REQUISITION CART MODAL DIALOG (MATCHING SCREENSHOT) -->
+    <div id="cartDrawer" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-xl bg-arasaka-card border-2 border-[#00F0FF] clip-corner-modal p-6 lg:p-8 space-y-6 relative shadow-[0_0_40px_rgba(0,240,255,0.3)]">
+            
+            <!-- Header -->
+            <div class="flex justify-between items-center border-b border-arasaka-border pb-4">
+                <h3 class="font-orbitron font-black text-[#00F0FF] text-xl lg:text-2xl flex items-center gap-3">
+                    <i class="fas fa-shopping-cart text-[#00F0FF]"></i> REQUISITION CART
+                </h3>
+                <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Items Container -->
+            <div id="cartItemsContainer" class="max-h-80 overflow-y-auto space-y-3 pr-2 font-tech">
+                <div class="text-center text-gray-400 py-10 font-mono text-sm">REQUISITION CART IS EMPTY</div>
+            </div>
+
+            <!-- Total Bar -->
+            <div class="flex justify-between items-center border-t border-arasaka-border pt-4 font-orbitron">
+                <span class="text-white font-bold text-base lg:text-lg tracking-wider">TOTAL:</span>
+                <span id="cartTotalPrice" class="text-[#00F0FF] font-black text-xl lg:text-2xl">€$ 0</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-4 font-orbitron pt-2">
+                <button onclick="clearCart()" class="py-3 bg-black border border-arasaka-border text-white hover:text-arasaka-red font-bold text-xs lg:text-sm clip-corner transition uppercase tracking-wider">
+                    CLEAR CART
+                </button>
+                <button onclick="checkoutCart()" class="py-3 bg-[#00F0FF] hover:bg-cyan-300 text-black font-black text-xs lg:text-sm clip-corner-topright transition uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+                    SUBMIT REQUISITION
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CYBERWARE DETAILS -->
+    <div id="cyberwareModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-arasaka-card border-2 border-arasaka-red w-full max-w-xl p-7 pt-9 relative clip-corner shadow-[0_0_50px_rgba(255,0,60,0.7)]">
+            <button onclick="closeModal('cyberwareModal')" class="absolute top-3 right-3 text-arasaka-red hover:text-white text-3xl font-black transition z-30 p-1">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div id="modalCyberwareContent" class="space-y-5 mt-2">
+                <!-- Filled dynamically via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CAREERS / SCHOLARSHIP APPLICATION -->
+    <div id="applyModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-arasaka-card border-2 border-arasaka-red w-full max-w-lg p-7 relative clip-corner shadow-[0_0_50px_rgba(255,0,60,0.7)]">
+            <button onclick="closeModal('applyModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl z-10">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h3 class="text-2xl font-orbitron font-black text-white mb-4">ARASAKA ACADEMY APPLICATION</h3>
+            <form onsubmit="handleApplySubmit(event)" class="space-y-4 font-tech">
+                <div>
+                    <label class="text-gray-200 text-sm font-bold block mb-1">FULL NAME</label>
+                    <input type="text" required class="w-full bg-black border-2 border-arasaka-border px-4 py-2.5 text-white font-tech focus:outline-none focus:border-arasaka-red rounded">
+                </div>
+                <div>
+                    <label class="text-gray-200 text-sm font-bold block mb-1">BIOMETRIC / ID CODE</label>
+                    <input type="text" required placeholder="NC-XXXX-XXXX" class="w-full bg-black border-2 border-arasaka-border px-4 py-2.5 text-white font-tech focus:outline-none focus:border-arasaka-red rounded">
+                </div>
+                <div>
+                    <label class="text-gray-200 text-sm font-bold block mb-1">PROGRAM SELECTION</label>
+                    <select class="w-full bg-black border-2 border-arasaka-border px-4 py-2.5 text-white font-tech focus:outline-none focus:border-arasaka-red rounded">
+                        <option>Arasaka Academy High School Scholarship</option>
+                        <option>Executive Tactical Operations Fast-Track</option>
+                        <option>Neural Cybernetics Engineering Internship</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-gray-200 text-sm font-bold block mb-1">QUALIFICATION STATEMENT</label>
+                    <textarea rows="3" required placeholder="State why you pledge loyalty to Arasaka..." class="w-full bg-black border-2 border-arasaka-border px-4 py-2.5 text-white font-tech focus:outline-none focus:border-arasaka-red rounded"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-arasaka-red hover:bg-arasaka-glowred text-white font-orbitron font-black tracking-wider text-base clip-corner">
+                    SUBMIT RECRUITMENT FORM
+                </button>
+            </form>
+            <div id="applySuccess" class="hidden mt-3 p-3 bg-green-900/70 border border-green-500 text-green-300 font-mono text-xs text-center rounded font-bold">
+                [SUCCESS] Application registered. Biometric screening scheduled.
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC, CYBERWARE DATA & CANVAS TOWER RENDER -->
+    <script>
+        /* SVG Fallbacks for Cyberware */
+        const mantisSVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'><rect width='800' height='500' fill='%230e1017'/><path d='M100 250 L400 120 L700 250 L400 220 Z' fill='%23ff003c' opacity='0.85'/><path d='M120 280 L420 180 L680 280 L420 260 Z' fill='%2300f0ff' opacity='0.6'/><text x='400' y='380' fill='%23ffffff' font-family='sans-serif' font-size='28' font-weight='bold' text-anchor='middle'>ARASAKA MANTIS BLADES</text></svg>";
+
+        const subdermalSVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'><rect width='800' height='500' fill='%230e1017'/><polygon points='150,100 350,100 450,250 350,400 150,400 250,250' fill='%23282c3d' stroke='%23ff003c' stroke-width='4'/><polygon points='450,100 650,100 750,250 650,400 450,400 550,250' fill='%23282c3d' stroke='%2300f0ff' stroke-width='4'/><text x='400' y='460' fill='%23ffffff' font-family='sans-serif' font-size='28' font-weight='bold' text-anchor='middle'>SUBDERMAL TITANIUM ARMOR</text></svg>";
+
+        /* Full Cyberware Products Data */
+        const cyberwareData = [
+            {
+                id: 'mantis',
+                name: 'MANTIS BLADES [ARASAKA SPEC]',
+                category: 'COMBAT',
+                tier: 'ICONIC / MILITARY',
+                price: '€$ 45,000',
+                image: 'mantis1.png',
+                altImage: 'mantis2.jpg',
+                fallbackImg: mantisSVG,
+                summary: 'High-frequency thermal blades deployed directly from forearm hydraulics for devastating slicing.',
+                specs: {
+                    damage: '165 Thermal Damage',
+                    attackSpeed: '3.5 Swings/sec',
+                    bleedChance: '+50% Bleed Chance',
+                    special: 'Target leap attack up to 12 meters.'
+                }
+            },
+            {
+                id: 'subdermal',
+                name: 'SUBDERMAL ARMOR TITANIUM',
+                category: 'DEFENSE',
+                tier: 'EPIC',
+                price: '€$ 32,000',
+                image: 'subdermal1.png',
+                altImage: 'subdermal.jpg',
+                fallbackImg: subdermalSVG,
+                summary: 'Sub-epidermal titan armor weave plating providing high ballistic mitigation without mobility loss.',
+                specs: {
+                    armorPoints: '+350 Armor',
+                    elementalResist: '+20% Thermal / EMP',
+                    weightPenalty: '0%',
+                    special: 'Self-repairing titan nanite matrix.'
+                }
+            },
+            {
+                id: 'relic',
+                name: 'THE RELIC 2.0 BIO-CHIP',
+                category: 'NEURAL',
+                tier: 'EXPERIMENTAL / EXECUTIVE',
+                price: 'CLASSIFIED',
+                image: 'relic.jpg',
+                fallbackImg: 'https://placehold.co/800x500/181A24/FF003C?text=Relic+2.0+Bio-Chip',
+                summary: 'Pioneering bio-neural chip capable of backing up and digitizing human consciousness via Soulkiller.',
+                specs: {
+                    bandwidth: '200 TB/s Transfer',
+                    neuralCompatibility: '99.9% Preservation',
+                    soulkillerGuard: 'Level 5 Active ICE',
+                    special: 'Construct personality transcription & bio-duplication.'
+                }
+            },
+            {
+                id: 'sandevistan',
+                name: 'ARASAKA SANDEVISTAN MK.5',
+                category: 'NEURAL',
+                tier: 'LEGENDARY',
+                price: '€$ 85,000',
+                image: 'sandevastian.png',
+                fallbackImg: 'https://placehold.co/800x500/181A24/FF003C?text=Sandevistan+Mk.5',
+                summary: 'Spinal neural booster slowing time perception down by 85% for superhuman reflexes.',
+                specs: {
+                    duration: '18 Seconds',
+                    cooldown: '20 Seconds',
+                    critBonus: '+25% Crit Damage',
+                    special: '+20% Damage amplification when active.'
+                }
+            },
+            {
+                id: 'gorilla',
+                name: 'GORILLA ARMS HYDRAULIC',
+                category: 'COMBAT',
+                tier: 'LEGENDARY',
+                price: '€$ 48,000',
+                image: 'gorilla.png',
+                altImage:'gorilla1.png',
+                fallbackImg: 'https://placehold.co/800x500/181A24/FF003C?text=Gorilla+Arms',
+                summary: 'Heavy hydraulic arm replacements delivering crushing melee force and structural door breach capability.',
+                specs: {
+                    damage: '210 Physical Damage',
+                    chargeForce: '100% Stun Chance',
+                    breachBonus: 'Forces body checks',
+                    special: 'Accumulates charge per hit for explosive strike.'
+                }
+            },
+            {
+                id: 'smartlink',
+                name: 'ARASAKA SMART LINK PALMAR',
+                category: 'NEURAL',
+                tier: 'RARE',
+                price: '€$ 18,000',
+                image: 'palmar1.png',
+                fallbackImg: 'https://placehold.co/800x500/181A24/FF003C?text=Smart+Link+Palmar',
+                summary: 'Direct palm micro-interface linking weapon optics with homing smart ammunition algorithms.',
+                specs: {
+                    hitProbability: '+40% Targeting',
+                    critChance: '+15%',
+                    feedbackBuffer: '100% EMP Shielded',
+                    special: 'Auto-seeks enemy weak points.'
+                }
+            }
+        ];
+
+        /* Shopping Cart State Array */
+        let cart = [];
+
+        function toggleCartDrawer() {
+            playSound('click');
+            const drawer = document.getElementById('cartDrawer');
+            drawer.classList.toggle('hidden');
+            renderCartItems();
+        }
+
+        function addToCart(itemId) {
+            playSound('click');
+            const product = cyberwareData.find(i => i.id === itemId);
+            if (!product) return;
+
+            const existing = cart.find(i => i.id === itemId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    priceStr: product.price,
+                    numericPrice: product.price === 'CLASSIFIED' ? 100000 : parseInt(product.price.replace(/[^0-9]/g, '')),
+                    quantity: 1,
+                    image: product.image,
+                    fallbackImg: product.fallbackImg
+                });
+            }
+
+            updateCartBadge();
+            renderCartItems();
+            closeModal('cyberwareModal');
+        }
+
+        function updateCartBadge() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                badge.innerText = totalItems;
+            }
+        }
+
+        function updateQuantity(itemId, change) {
+            playSound('click');
+            const item = cart.find(i => i.id === itemId);
+            if (!item) return;
+
+            item.quantity += change;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== itemId);
+            }
+
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalPriceEl = document.getElementById('cartTotalPrice');
+            
+            if (!container) return;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-400 py-10 font-mono text-sm">REQUISITION CART IS EMPTY</div>`;
+                if (totalPriceEl) totalPriceEl.innerText = '€$ 0';
+                return;
+            }
+
+            let grandTotal = 0;
+
+            container.innerHTML = cart.map(item => {
+                const itemTotal = item.numericPrice * item.quantity;
+                grandTotal += itemTotal;
+
+                return `
+                    <div class="py-3 flex items-center justify-between gap-3">
+                        <div class="w-12 h-12 bg-black border border-arasaka-border rounded flex items-center justify-center p-1 overflow-hidden shrink-0">
+                            <img src="${item.image}" onerror="this.onerror=null; this.src='${item.fallbackImg}';" class="w-full h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-orbitron font-bold text-white text-xs truncate">${item.name}</h4>
+                            <div class="text-xs text-arasaka-cyan font-mono">${item.priceStr}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQuantity('${item.id}', -1)" class="w-6 h-6 bg-black border border-arasaka-border text-white text-xs rounded hover:bg-arasaka-red transition">-</button>
+                            <span class="text-xs font-mono font-bold text-white w-4 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity('${item.id}', 1)" class="w-6 h-6 bg-black border border-arasaka-border text-white text-xs rounded hover:bg-arasaka-red transition">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (totalPriceEl) {
+                totalPriceEl.innerText = `€$ ${grandTotal.toLocaleString()}`;
+            }
+        }
+
+        function checkoutCart() {
+            if (cart.length === 0) {
+                return;
+            }
+            playSound('click');
+            cart = [];
+            updateCartBadge();
+            renderCartItems();
+            toggleCartDrawer();
+        }
+
+        /* Dynamic Section Navigation Controller */
+        function showSection(sectionKey) {
+            playSound('click');
+            const sections = ['home', 'cyberware', 'careers', 'intelligence', 'divisions'];
+            
+            sections.forEach(key => {
+                const el = document.getElementById(key + 'Section');
+                if (el) el.classList.add('hidden');
+            });
+
+            const activeSection = document.getElementById(sectionKey + 'Section');
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
+
+            // Highlight top nav tab
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-arasaka-red', 'border-arasaka-red');
+                btn.classList.add('bg-arasaka-card', 'border-arasaka-border');
+            });
+
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('bg-arasaka-red', 'border-arasaka-red');
+                event.currentTarget.classList.remove('bg-arasaka-card', 'border-arasaka-border');
+            }
+        }
+
+        /* Render Cyberware Items */
+        function renderCyberware(items) {
+            const grid = document.getElementById('cyberwareGrid');
+            if (!grid) return;
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-10 text-center text-gray-300 font-mono text-base">NO CYBERWARE MATCHES FOUND FOR CURRENT QUERY.</div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(item => `
+                <div class="bg-arasaka-card border-2 border-arasaka-border rounded overflow-hidden hover:border-arasaka-red transition group clip-corner flex flex-col justify-between glow-box-red">
+                    <div class="h-64 overflow-hidden relative bg-black/80 flex items-center justify-center p-2">
+                        <img src="${item.image}" 
+                             alt="${item.name}" 
+                             onerror="this.onerror=null; this.src='${item.fallbackImg}';"
+                             class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-arasaka-card via-transparent to-transparent pointer-events-none"></div>
+                        <div class="absolute top-3 left-3 bg-black/90 border border-arasaka-red px-3 py-1 text-xs font-orbitron font-extrabold text-arasaka-red z-10">
+                            ${item.category}
+                        </div>
+                        <div class="absolute top-3 right-3 bg-arasaka-red text-white px-3 py-1 text-xs font-orbitron font-extrabold z-10">
+                            ${item.price}
+                        </div>
+                    </div>
+
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-orbitron font-black text-white text-xl group-hover:text-arasaka-red transition-colors">${item.name}</h3>
+                            <p class="text-base font-tech text-gray-200 mt-2 line-clamp-2 leading-relaxed">${item.summary}</p>
+                        </div>
+
+                        <div class="pt-4 border-t border-arasaka-border flex justify-between items-center gap-3">
+                            <span class="text-xs font-mono text-gray-300 font-bold">${item.tier}</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="addToCart('${item.id}')" title="Quick Add to Cart" class="p-2.5 bg-[#00F0FF] hover:bg-cyan-300 text-black font-black clip-corner-topright transition shadow-md flex items-center justify-center">
+                                    <i class="fas fa-cart-plus text-base"></i>
+                                </button>
+                                <button onclick="openCyberwareModal('${item.id}')" class="px-5 py-2.5 bg-arasaka-red hover:bg-arasaka-glowred text-white text-xs font-orbitron font-black clip-corner transition shadow-md whitespace-nowrap">
+                                    VIEW SPECS <i class="fas fa-arrow-right ml-1.5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCyberware(category) {
+            playSound('click');
+            document.querySelectorAll('.cyber-filter-btn').forEach(btn => {
+                if (btn.innerText === category) {
+                    btn.classList.add('bg-arasaka-red', 'text-white');
+                    btn.classList.remove('bg-arasaka-card', 'text-gray-200');
+                } else {
+                    btn.classList.remove('bg-arasaka-red', 'text-white');
+                    btn.classList.add('bg-arasaka-card', 'text-gray-200');
+                }
+            });
+
+            if (category === 'ALL') {
+                renderCyberware(cyberwareData);
+            } else {
+                const filtered = cyberwareData.filter(i => i.category === category);
+                renderCyberware(filtered);
+            }
+        }
+
+        function openCyberwareModal(id) {
+            playSound('click');
+            const item = cyberwareData.find(i => i.id === id);
+            if (!item) return;
+
+            const content = document.getElementById('modalCyberwareContent');
+            
+            let imagesHtml = `<div class="h-64 rounded overflow-hidden relative bg-black/80 flex items-center justify-center p-2 border border-arasaka-border">
+                <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='${item.fallbackImg}';" class="w-full h-full object-contain">
+                <div class="absolute top-3 left-3 bg-arasaka-red text-white px-3 py-1 font-orbitron text-xs font-bold z-10">
+                    ${item.category} // ${item.tier}
+                </div>
+            </div>`;
+
+            if (item.altImage) {
+                imagesHtml = `<div class="grid grid-cols-2 gap-3">
+                    <div class="h-48 rounded overflow-hidden relative border border-arasaka-red bg-black/80 flex items-center justify-center p-2">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='${item.fallbackImg}';" class="w-full h-full object-contain">
+                        <span class="absolute bottom-1 left-1 bg-black/90 px-2 py-0.5 text-[10px] font-mono text-arasaka-cyan font-bold z-10">DEPLOYED</span>
+                    </div>
+                    <div class="h-48 rounded overflow-hidden relative border border-arasaka-red bg-black/80 flex items-center justify-center p-2">
+                        <img src="${item.altImage}" alt="${item.name} Alt" onerror="this.onerror=null; this.src='${item.fallbackImg}';" class="w-full h-full object-contain">
+                        <span class="absolute bottom-1 left-1 bg-black/90 px-2 py-0.5 text-[10px] font-mono text-arasaka-red font-bold z-10">COMBAT VIEW</span>
+                    </div>
+                </div>`;
+            }
+
+            content.innerHTML = `
+                ${imagesHtml}
+                <h3 class="text-2xl font-orbitron font-black text-white">${item.name}</h3>
+                <p class="text-base font-tech text-gray-100 leading-relaxed">${item.summary}</p>
+                
+                <div class="bg-black p-5 border-2 border-arasaka-border rounded space-y-2 font-mono text-xs">
+                    <div class="text-arasaka-red font-extrabold text-sm border-b border-arasaka-border pb-1 font-orbitron">HARDWARE SPECIFICATIONS</div>
+                    <div class="flex justify-between"><span class="text-gray-300">Primary Output:</span> <span class="text-white font-bold">${item.specs.damage || item.specs.bandwidth || item.specs.duration || item.specs.armorPoints || item.specs.hitProbability || item.specs.timeSlow}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-300">Cycle Rate / Res:</span> <span class="text-white font-bold">${item.specs.attackSpeed || item.specs.neuralCompatibility || item.specs.cooldown || item.specs.elementalResist || item.specs.critChance || item.specs.range}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-300">Special Enhancement:</span> <span class="text-arasaka-cyan font-bold">${item.specs.special}</span></div>
+                </div>
+
+                <div class="flex justify-between items-center pt-2 gap-3">
+                    <div class="font-orbitron font-black text-xl text-white">${item.price}</div>
+                    <div class="flex gap-2">
+                        <button onclick="addToCart('${item.id}')" class="px-5 py-3 bg-[#00F0FF] hover:bg-cyan-300 text-black font-orbitron font-black text-xs clip-corner-topright transition shadow-lg uppercase">
+                            ADD TO CART
+                        </button>
+                        <button onclick="alert('Requisition order submitted. Arasaka agent will verify clearance.'); closeModal('cyberwareModal');" class="px-5 py-3 bg-arasaka-red hover:bg-arasaka-glowred text-white font-orbitron font-black text-xs clip-corner transition shadow-lg uppercase">
+                            REQUEST
+                        </button>
+                    </div>
+                </div>
+            `;
+            openModal('cyberwareModal');
+        }
+
+        /* Shopping Cart Functions */
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalPriceEl = document.getElementById('cartTotalPrice');
+            
+            if (!container) return;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-400 py-10 font-mono text-sm">REQUISITION CART IS EMPTY</div>`;
+                if (totalPriceEl) totalPriceEl.innerText = '€$ 0';
+                return;
+            }
+
+            let grandTotal = 0;
+
+            container.innerHTML = cart.map(item => {
+                const itemTotal = item.numericPrice * item.quantity;
+                grandTotal += itemTotal;
+
+                return `
+                    <div class="p-3 bg-black border border-arasaka-border rounded flex items-center justify-between gap-3">
+                        <div class="w-12 h-12 bg-arasaka-card border border-arasaka-border rounded flex items-center justify-center p-1 overflow-hidden shrink-0">
+                            <img src="${item.image}" onerror="this.onerror=null; this.src='${item.fallbackImg}';" class="w-full h-full object-contain">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-orbitron font-bold text-white text-xs truncate">${item.name}</h4>
+                            <div class="text-xs text-[#00F0FF] font-mono font-bold">${item.priceStr}</div>
+                        </div>
+                        <div class="flex items-center gap-2 font-mono">
+                            <button onclick="updateQuantity('${item.id}', -1)" class="w-6 h-6 bg-arasaka-card border border-arasaka-border text-white text-xs rounded hover:bg-arasaka-red transition flex items-center justify-center">-</button>
+                            <span class="text-xs font-bold text-white w-4 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity('${item.id}', 1)" class="w-6 h-6 bg-arasaka-card border border-arasaka-border text-white text-xs rounded hover:bg-arasaka-red transition flex items-center justify-center">+</button>
+                            <button onclick="updateQuantity('${item.id}', -${item.quantity})" class="text-gray-400 hover:text-arasaka-red text-xs ml-2">
+                                <i class="fas fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (totalPriceEl) {
+                totalPriceEl.innerText = `€$ ${grandTotal.toLocaleString()}`;
+            }
+        }
+
+        function clearCart() {
+            playSound('click');
+            cart = [];
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        /* Controllers */
+        function handleSearch(query) {
+            const q = query.toLowerCase().trim();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            clearBtn.classList.toggle('hidden', q === '');
+
+            if (!q) {
+                renderCyberware(cyberwareData);
+                return;
+            }
+
+            showSection('cyberware');
+
+            const filtered = cyberwareData.filter(i => 
+                i.name.toLowerCase().includes(q) || 
+                i.id.toLowerCase().includes(q) ||
+                i.category.toLowerCase().includes(q) ||
+                i.summary.toLowerCase().includes(q)
+            );
+            renderCyberware(filtered);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            handleSearch('');
+        }
+
+        function updateClearance(level) {
+            playSound('click');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            playSound('click');
+            const status = document.getElementById('contactStatus');
+            status.classList.remove('hidden');
+            setTimeout(() => { e.target.reset(); }, 1000);
+        }
+
+        function handleApplySubmit(e) {
+            e.preventDefault();
+            playSound('click');
+            const success = document.getElementById('applySuccess');
+            success.classList.remove('hidden');
+            setTimeout(() => {
+                closeModal('applyModal');
+                success.classList.add('hidden');
+                e.target.reset();
+            }, 2000);
+        }
+
+        /* Web Audio SFX */
+        let audioCtx = null;
+        let isAudioMuted = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (isAudioMuted) return;
+            initAudio();
+
+            if (type === 'click') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(980, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(240, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            }
+        }
+
+        function toggleAudio() {
+            isAudioMuted = !isAudioMuted;
+            const icon = document.getElementById('soundIcon');
+            const text = document.getElementById('soundText');
+            const bgMusic = document.getElementById('bgMusic');
+
+            if (isAudioMuted) {
+                icon.className = 'fas fa-volume-xmark text-arasaka-red';
+                text.innerText = 'SFX OFF';
+                if (bgMusic) bgMusic.pause();
+            } else {
+                initAudio();
+                icon.className = 'fas fa-volume-high text-arasaka-cyan';
+                text.innerText = 'SFX ON';
+                if (bgMusic) {
+                    bgMusic.volume = 0.4;
+                    bgMusic.play().catch(e => console.log("Autoplay blocked:", e));
+                }
+                playSound('click');
+            }
+        }
+
+        /* 3D Arasaka Tower Canvas Render */
+        const canvas = document.getElementById('towerCanvas');
+        const ctx = canvas.getContext('2d');
+        let scrollRatio = 0;
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawTower() {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.fillStyle = '#060608';
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.strokeStyle = 'rgba(255, 0, 60, 0.08)';
+            ctx.lineWidth = 1;
+            const gridSize = 24;
+            for (let x = 0; x < w; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+
+            const towerOffsetY = scrollRatio * (h * 0.5);
+            const centerX = w * 0.6; 
+            const baseWidth = Math.min(w * 0.65, 230);
+
+            const towerTopY = 70 - towerOffsetY;
+            const towerBottomY = h + 200 - towerOffsetY;
+
+            ctx.beginPath();
+            ctx.moveTo(centerX - baseWidth * 0.25, towerTopY);
+            ctx.lineTo(centerX + baseWidth * 0.25, towerTopY);
+            ctx.lineTo(centerX + baseWidth * 0.5, towerBottomY);
+            ctx.lineTo(centerX - baseWidth * 0.5, towerBottomY);
+            ctx.closePath();
+
+            ctx.fillStyle = '#0c0d12';
+            ctx.fill();
+
+            ctx.strokeStyle = '#ff003c';
+            ctx.lineWidth = 2.5;
+            ctx.shadowColor = '#ff003c';
+            ctx.shadowBlur = 16;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, towerTopY);
+            ctx.lineTo(centerX, towerBottomY);
+            ctx.strokeStyle = 'rgba(255, 0, 60, 0.5)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            const floors = 28;
+            ctx.strokeStyle = 'rgba(255, 0, 60, 0.25)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < floors; i++) {
+                const fy = towerTopY + (i * (h / 16));
+                if (fy > 0 && fy < h) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX - baseWidth * 0.42, fy);
+                    ctx.lineTo(centerX + baseWidth * 0.42, fy);
+                    ctx.stroke();
+                }
+            }
+
+            ctx.beginPath();
+            ctx.arc(centerX, towerTopY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#00f0ff';
+            ctx.shadowColor = '#00f0ff';
+            ctx.shadowBlur = 22;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            const time = Date.now() * 0.002;
+            const scanY = ((Math.sin(time) + 1) / 2) * h;
+            ctx.strokeStyle = 'rgba(255, 0, 60, 0.75)';
+            ctx.lineWidth = 2;
+            ctx.shadowColor = '#ff003c';
+            ctx.shadowBlur = 12;
+            ctx.beginPath();
+            ctx.moveTo(0, scanY);
+            ctx.lineTo(w, scanY);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            requestAnimationFrame(drawTower);
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            scrollRatio = maxScroll > 0 ? scrollTop / maxScroll : 0;
+
+            const progressBar = document.getElementById('scrollProgress');
+            if (progressBar) {
+                progressBar.style.width = `${Math.min(100, Math.max(0, scrollRatio * 100))}%`;
+            }
+
+            const elevVal = document.getElementById('elevationValue');
+            if (elevVal) {
+                const currentFloor = Math.max(1, Math.round(140 - (scrollRatio * 139)));
+                elevVal.innerText = `${currentFloor}F ${currentFloor === 140 ? '(APEX)' : currentFloor === 1 ? '(GROUND)' : ''}`;
+            }
+        });
+
+        function updateClock() {
+            const now = new Date();
+            const hrs = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const secs = String(now.getSeconds()).padStart(2, '0');
+            const clock = document.getElementById('currentTime');
+            if (clock) {
+                clock.innerText = `${hrs}:${mins}:${secs} NC-T`;
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        window.onload = function() {
+            renderCyberware(cyberwareData);
+            requestAnimationFrame(drawTower);
+        };
+    </script>
+</body>
+</html>
